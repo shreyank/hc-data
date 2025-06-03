@@ -1,2 +1,3 @@
-# hc-ranking-data
-Heavy Cardboard herd member top games data
+# hc-data
+Heavy Cardboard data
+- rankings - herd and hchq top games data
