@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Comparing the herd to HCHQ group</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Comparing the herd to HCHQ group</h1>
+
+</div>
+
+
+<pre class="r"><code>source(&quot;hc.R&quot;)
+
+# this code is very duplicative to that in hc.R, but it isn&#39;t the third strike
+
+hchq_rankings &lt;- read_csv(&quot;hchq_rankings_deidentified.csv&quot;, col_types = list(bgg_id = col_character())) |&gt;
+  mutate(population=&quot;hchq&quot;)
+
+n_hchq_voters &lt;- hchq_rankings |&gt; 
+  select(identifier) |&gt; 
+  distinct() |&gt; 
+  nrow()
+
+hchq_ranked_games &lt;- hchq_rankings |&gt; 
+  group_by(bgg_id) |&gt; 
+  summarize(
+    borda_50 = sum(points), # total number of points
+    nb_50 = borda_50 / n_hchq_voters # points normalized by dividing by number of voters
+    ) |&gt; 
+  arrange(desc(borda_50)) |&gt; 
+  mutate(hchq_rank = min_rank(desc(borda_50)))
+
+hchq_top_50_games &lt;- hchq_ranked_games |&gt; 
+  filter(hchq_rank &lt;= 50) |&gt; 
+  left_join(games, by = &#39;bgg_id&#39;) 
+
+hchq_top50_rankings &lt;- hchq_rankings |&gt; 
+  inner_join(hchq_top_50_games, by = &#39;bgg_id&#39;) |&gt; 
+  left_join(games, by=&quot;bgg_id&quot;) |&gt; 
+  arrange(hchq_rank)</code></pre>
+<p>Lets compare the overall scores between herd and HCHQ. To compare
+them I’ll use the normalized borda scores. The borda score is a fancy
+name for a calculation that sums each ranking of 50: giving the top
+rated game 49 points and the bottom rated 0. So for the herd the borda
+score of Age of Steam was 3199. To compare the 140 members of the herd
+to 15 members of the HCHQ group, I divided by that membership. So Age of
+Steam ended up with a score of 22.8 (3199/40) for the herd and 32.4
+(486/15) for HCHQ. Now I have comparable numbers I can plot the herd’s
+top 50 and show the variance to HCHQ’s top 50.</p>
+<pre class="r"><code>herd_top_50_bar_data &lt;- herd_top_50_games |&gt; 
+  left_join(hchq_ranked_games, by = &quot;bgg_id&quot;, suffix = c(&quot;_herd&quot;, &quot;_hchq&quot;)) |&gt; 
+  arrange(herd_rank) |&gt; 
+  select(bgg_name, nb_50_herd, nb_50_hchq) |&gt; 
+  pivot_longer(cols = !bgg_name, names_to = &quot;population&quot;, values_to = &quot;nb_50&quot;, names_prefix = &quot;nb_50_&quot;) |&gt; 
+  mutate(nb_50 = replace_na(nb_50, 0))
+
+
+herd_top_50_bar_data |&gt; 
+  ggplot(aes(fct_inorder(bgg_name), nb_50))+
+  geom_col(data = ~ filter(.x, population == &quot;herd&quot;), fill = &quot;grey&quot;) +
+  geom_point(data = ~ filter(.x, population == &quot;hchq&quot;), shape = 18, color = &quot;red&quot;, size = 5)  +
+  geom_line(aes(group = bgg_name), color = &quot;red&quot;) + 
+  annotate(geom = &quot;text&quot;, x=8.4, y=24, label=&quot;HCHQ scores&quot;, hjust = &quot;left&quot;) +
+  annotate(geom = &quot;text&quot;, x=2.6, y=20, label=&quot;Herd\nscores&quot;, hjust = &quot;left&quot;) +
+  labs(y=&quot;Normalized Borda Score&quot;, x = NULL, title=&quot;Herd Scores with HCHQ variance&quot;) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust = 1), legend.position = &quot;bottom&quot;) </code></pre>
+<p><img src="hc-2025-hchq_files/figure-html/unnamed-chunk-2-1.png" width="1728" />
+And here’s the reverse perspective, the HCHQ top 50 compared with herd’s
+scores.</p>
+<pre class="r"><code>hchq_top_50_bar_data &lt;- hchq_top_50_games |&gt; 
+  left_join(herd_ranked_games, by = &quot;bgg_id&quot;, suffix = c(&quot;_hchq&quot;, &quot;_herd&quot;)) |&gt; 
+  arrange(hchq_rank) |&gt; 
+  select(bgg_name, nb_50_herd, nb_50_hchq) |&gt; 
+  pivot_longer(cols = !bgg_name, names_to = &quot;population&quot;, values_to = &quot;nb_50&quot;, names_prefix = &quot;nb_50_&quot;) |&gt; 
+  mutate(nb_50 = replace_na(nb_50, 0))
+
+
+hchq_top_50_bar_data |&gt; 
+  ggplot(aes(fct_inorder(bgg_name), nb_50))+
+  geom_col(data = ~ filter(.x, population == &quot;hchq&quot;), fill = &quot;grey&quot;) +
+  geom_point(data = ~ filter(.x, population == &quot;herd&quot;), shape = 18, color = &quot;red&quot;, size = 5)  +
+  geom_line(aes(group = bgg_name), color = &quot;red&quot;) + 
+  annotate(geom = &quot;text&quot;, x=28.4, y=15, label=&quot;Herd scores&quot;, hjust = &quot;left&quot;) +
+  annotate(geom = &quot;text&quot;, x=15.6, y=13, label=&quot;HCHQ scores&quot;, hjust = &quot;left&quot;) +
+   labs(y=&quot;Normalized Borda Score&quot;, x = NULL, title=&quot;HCHQ Scores with herd variance&quot;) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust = 1), legend.position = &quot;bottom&quot;) </code></pre>
+<p><img src="hc-2025-hchq_files/figure-html/unnamed-chunk-3-1.png" width="1728" />
+I can also show how ratings from HCHQ fitted into the strip chart for
+distribution that I showed for the herd’s ratings</p>
+<pre class="r"><code>combined_herd_top_50_rankings &lt;- bind_rows(herd_top50_rankings, 
+                                           hchq_rankings |&gt; 
+                                             semi_join(herd_top_50_games, by = &quot;bgg_id&quot;))
+
+# combined_herd_top_50_rankings |&gt; filter(bgg_id == &quot;177736&quot;)
+
+combined_herd_top_50_rankings |&gt;
+  arrange(desc(herd_rank)) |&gt;
+  ggplot(aes(game_rank, fct_inorder(bgg_name), color=population)) +
+  geom_jitter(height=0.2, width=0, size = 2, shape=1) +
+  scale_color_manual(values = c(&quot;red&quot;, &quot;black&quot;)) +
+  scale_x_reverse(limits = c(50,1), breaks = c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50), minor_breaks=NULL) +
+  theme(legend.position = &quot;bottom&quot;) +
+  labs(y=NULL)</code></pre>
+<p><img src="hc-2025-hchq_files/figure-html/unnamed-chunk-4-1.png" width="1152" /></p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

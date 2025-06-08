@@ -4,6 +4,7 @@ output:
   html_document:
     code_folding: hide
     output_dir: "build"
+    self_contained: false
 ---
 
 ```{r warning=FALSE, message=FALSE}
