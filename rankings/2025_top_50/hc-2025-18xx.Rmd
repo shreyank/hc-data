@@ -1,0 +1,102 @@
+---
+title: "Looking at rankings data for 18xx games"
+output: 
+  html_document:
+    code_folding: hide
+    output_dir: "build"
+---
+
+```{r warning=FALSE, message=FALSE}
+source("hc.R")
+```
+
+In the Heavy Cardboard rankings, each ranking was an individual game, as defined by BGG. While some consolidation was done for things like Castles of Burgundy and Castles of Burgundy Special Edition, we kept it to very obvious "same game" cases. This made a big difference to 18xx. No 18xx made the top fifty, because the votes were split across many games.
+
+```{r}
+list_18xx <- games |> 
+  filter(str_detect(families, "Series: 18xx"))
+  
+rankings_18xx <- herd_rankings |> 
+  semi_join(list_18xx, by = 'bgg_id')
+
+top_18xx <- herd_ranked_games |> 
+  semi_join(list_18xx, by = 'bgg_id') |> 
+  left_join(games, by = 'bgg_id') 
+```
+
+This is the top ten 18xx games on the list. (We decided what was 18xx by using the family on BGG.)
+
+```{r}
+top_18xx |> 
+  slice_head(n=10) |> 
+  select(bgg_name, borda_50, herd_rank) |> 
+  knitr::kable(col.names = c("name", "borda 50 score", "herd rank"))
+```
+
+The natural question is what would have happened if there was a single choice for 18xx. A way we can approximate this is to create a synthetic 18xx game with the highest rating of anyone who rated an 18xx game. 
+
+```{r}
+
+games_plus_18xx <- bind_rows(games, tibble(bgg_id = "f-19", bgg_name = "18xx"))
+
+game_18xx_rankings <- rankings_18xx |> 
+  group_by(identifier) |> 
+  arrange(game_rank) |> 
+  slice_head(n=1) |> 
+  ungroup() |> 
+  mutate(bgg_id = "f-19")
+
+rankings_plus_18xx <- bind_rows(herd_rankings, game_18xx_rankings)
+
+ranked_games_plus_18xx <- rankings_plus_18xx |> 
+  group_by(bgg_id) |> 
+  summarize(borda_50 = sum(points), nb_50 = borda_50 / n_herd_voters) |> 
+  arrange(desc(borda_50)) |> 
+  mutate(herd_rank = min_rank(desc(borda_50))) 
+
+top_50_plus_18xx <- ranked_games_plus_18xx |> 
+  filter(herd_rank <= 51) |> 
+  left_join(games_plus_18xx, by = 'bgg_id') 
+
+  
+
+top_50_rankings_plus_18xx <- rankings_plus_18xx |> 
+  inner_join(top_50_plus_18xx, by = 'bgg_id') |> 
+  left_join(games_plus_18xx, by="bgg_id") |> 
+  arrange(herd_rank)
+  
+```
+
+Given that, 18xx ends up 3rd on the list.
+
+```{r fig.width=18}
+top_50_plus_18xx |> 
+  ggplot(aes(fct_inorder(bgg_name), borda_50)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust = 1)) +
+  geom_col(data = top_50_plus_18xx |> filter(bgg_id == "f-19"), fill = 'green')
+```
+
+It has a decent score above most other games, although still well-short of the top two.
+
+We can also compare its distribution, using the histogram. I'll just show the top ten.
+
+```{r fig.width=12, fig.height=5}
+top_50_rankings_plus_18xx |> 
+  filter(herd_rank <= 10) |> 
+  ggplot(aes(game_rank)) +
+  geom_histogram(breaks = seq(1,50,by= 5)) +
+  facet_wrap(~fct_inorder(bgg_name), ncol=5, strip.position = "bottom")
+```
+
+And the strip chart
+
+```{r fig.width=12, fig.height=10}
+top_50_rankings_plus_18xx |> 
+  filter(herd_rank <= 10) |> 
+  arrange(desc(herd_rank)) |> 
+  ggplot(aes(game_rank, fct_inorder(bgg_name))) +
+  geom_jitter(height=0.2, width=0, size = 2, shape = 1) +
+  scale_x_reverse(limits = c(51,1), breaks = c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50), minor_breaks=NULL) +
+  labs(y=NULL)
+```
