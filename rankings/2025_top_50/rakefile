@@ -1,0 +1,9 @@
+# copy knitted html files to html
+
+task :copy_html do
+  target = "../../html"
+  mkdir_p target
+  files = %w[hc-2025.html hc-2025-18xx.html hc-2025-hchq.html]
+  files.each {cp _1, target}
+end
+
