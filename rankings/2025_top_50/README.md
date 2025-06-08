@@ -11,6 +11,7 @@
 - hc-2025.Rmd      - plot of totals and distributions of herd rankings
 - hc-2025-18xx.Rmd - include 18xx as if it were a single game
 - hc-2025-hchq.Rmd - compare herd rankings to HCHQ
+- hc.R             - common code for the Rmd files
 - rakefile - ruby code to copy generated html to top level
 
 These should knit with R. R generates HTML files in this folder, such files are ignored by git. The rakefile includes a script to copy these files to the top level HTML folder, which is retained by git. This way we keep HTML files separate for non-R users to read, and avoid populating git with intermediate HTML files while we are working on R scripts.
