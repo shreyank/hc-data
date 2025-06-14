@@ -1,8 +1,8 @@
 # copy knitted html files to html
 
 task :copy_html do
-  target = "../../html"
+  target = "../../docs"
   mkdir_p target
-  cp_r "build", target + "/2025-top-50"
+  cp_r "out", target + "/2025-top-50"
 end
 
