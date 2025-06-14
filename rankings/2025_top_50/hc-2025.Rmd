@@ -1,5 +1,5 @@
 ---
-title: "Distribution of Heavy Cardboard top 50 data"
+title: "Distribution of 2025 Heavy Cardboard patron top 50 data"
 output: 
   html_document:
     code_folding: hide
@@ -9,15 +9,46 @@ output:
 
 ```{r warning=FALSE, message=FALSE}
 source("hc.R")
+library('DT')
+
 ```
+Martin Fowler, 14 June 2025.
+
+Here I look at the ratings data for the 2025 Heavy Cardboard Patreon survey, where we asked each patron to let us know their top 50 games.
+
+Here's an interactive table of all the aggregate rankings 
+
+```{r}
+herd_ranked_games |> 
+  left_join(games, by="bgg_id") |> 
+  mutate(nb_50 = round(nb_50, digits=2), bayes_average = round(bayes_average, digits = 2), average = round(average, digits = 2)) |> 
+  select(bgg_name, herd_rank, nb_50, borda_50, rank, year_published, play_time, bayes_average, average, average_weight) |> 
+  datatable(
+    rownames = FALSE,
+    colnames = c("herd rank" = "herd_rank", "name" = "bgg_name", "B50 (abs)" = "borda_50", "Herd B50" = "nb_50", "BGG rank" = "rank", "year" = "year_published", "play time" = "play_time",
+                 "BGG geek rating"="bayes_average", "BGG average" = "average", "weight" = "average_weight")
+  )
+```
+The BGG data on this table was sourced from BGG in June 2025. It's probably different today.
+
+- *B50 (abs)*: The absolute Borda 50 score from the herd. A Borda scoring scheme scores a players #1 ranked game 50 points, #2 gets 49, all the way down to 50 getting 1.
+- *Herd rank*: Herd's ranking according to the B50 score
+- *Herd B50*: The absolute Borda 50 score divided by the number of voters (in this case `r n_herd_voters`)
+- *BGG Rank*: The BGG rank for the game
+- *BGG Geek rating*: The BGG rating that's adjusted according to their mysterious ways
+- *BGG average*: The average BGG rating without adjustment
+- *year*: The year the game was published (according to BGG)
+- *play time*: Play time in minutes, in the alternative universe where BGG playtimes are accurate
+- *weight*: BGG's weight number. Whatever that means.
 
 
-The first thing I plotted with a graph of votes for each game, just to get a sense of the data. What's noticeable here is the huge gap between the two top games and the rest.
+Once I got the data, the first thing I plotted was a graph of votes for each game, just to get a sense of the data. What's noticeable here is the huge gap between the two top games and the rest.
 
 ```{r fig.width=18}
 herd_top_50_games |> 
   ggplot(aes(fct_inorder(bgg_name), borda_50)) +
   geom_col() +
+  labs(x = "name", y="absolute borda 50 score") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust = 1)) 
 ```
 
@@ -25,12 +56,13 @@ herd_top_50_games |>
 
 One of the first things I like to do with a dataset is get a sense of the overall distributions of the data. In this case I was interested in the distributions of the rankings for the top 50 games. To do this I plotted a histogram of rankings for each game with a bin-width of 5.
 
-For those not familiar with histograms, this is essentially a bar chart that shows for each game, how many rankings fell in each bin So in the graph below we can see that nearly 40 people ranked Brass Birmingham and Age of Steam in their top 5, while no other game had more than 20 top-5 rankings. 
+For those not familiar with histograms, this is essentially a bar chart that shows for each game, how many rankings fell in each bin. So in the graph below we can see that nearly 40 people ranked Brass Birmingham and Age of Steam in their top 5, while no other game had more than 20 top-5 rankings. 
 
 ```{r fig.width=12, fig.height=20}
 herd_top50_rankings |> 
   ggplot(aes(game_rank)) +
   geom_histogram(breaks = seq(0,50,by= 5)) +
+  #labs(y = NULL, x = "name") +
   facet_wrap(~fct_inorder(bgg_name), ncol=5, strip.position = "bottom")
 ```
 

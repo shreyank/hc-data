@@ -3,6 +3,6 @@
 task :copy_html do
   target = "../../docs"
   mkdir_p target
-  cp_r "out", target + "/2025-top-50"
+  system "cp -r out/* #{target}/2025-top-50"
 end
 
